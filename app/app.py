@@ -1689,4 +1689,4 @@ if __name__ =='__main__':
     csrf.init_app(app)
     app.register_error_handler(404, pagina_no_encontrada)
     app.register_error_handler(401, acceso_no_autorizado)
-    app.run(debug='0.0.0.0', port = 5000)
+    app.run(host='0.0.0.0', port = 5000)
