@@ -1,0 +1,55 @@
+{% extends "dashboard.html" %}
+
+{% block titulo %} Tu perfil {% endblock %}
+
+{% block head %} {% endblock %}
+
+
+  <body class="body_usuarios_detalles">
+    {% block contenido %}
+    
+    <div class="contenido_usuarios_detalles">
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="notifcacion {% if "Error" in message %} peligro {%  elif "Advertencia" in message %} advertencia {% else %} completado {% endif %} " id="notificacion">
+                        {{message}} 
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+          
+          <div class="container_usuario" style="max-width: 540px;">
+              {% set foto = usuario[5] %}
+              {% if foto and foto is string and foto != '' %}
+                  <img src="{{ url_for('static', filename='img/uploads/' + foto) }}" class="img_usuario">
+              {% else %}
+                  <img src="{{ url_for('static', filename='img/uploads/default-profile.png') }}" class="img_usuario" >
+              {% endif %}
+              <h3 class="card-title">Nombre: {{ usuario[1] }} {{ usuario[2] }}</h3>
+              <h3 class="card-title">Correo: {{ usuario[3] }}</h3>
+          </div>
+
+          <a class="boton boton_editar_usuario" href="{{ url_for('editar_usuario', id_usuario=usuario[0]) }}"> Editar perfil </a>
+    </div>
+
+    <script> 
+        function mostrarNotificacion() {
+            const notificacion = document.getElementById("notificacion");
+            notificacion.style.display = "block";
+        
+            // Cerrar la notificación después de 4 segundos
+            setTimeout(function() {
+                notificacion.style.display = "none";
+            }, 3000);
+        }
+        
+        // Mostrar la notificación para probar
+        mostrarNotificacion();
+    </script> 
+
+{% endblock %}
+  </body>
+
+ 

@@ -1,0 +1,142 @@
+{% extends "dashboard.html" %}
+
+{% block titulo %} Maquinaria {% endblock %}
+
+
+{% block head %} {% endblock %}
+
+<body class="body_maquinaria">
+
+    {% block contenido %}
+
+    <div class="contenido_maquinaria">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="notifcacion {% if "Error" in message %} peligro {%  elif "Advertencia" in message %} advertencia {% else %} completado {% endif %} " id="notificacion">
+                        {{message}} 
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <h2>Tabla de maquinaria</h2>
+
+        <div class="btns_opcion_registro">
+            <a href="{{url_for('registrar_maquinaria')}}" class="btn_registrar boton">Registrar maquina</a>
+        </div>
+
+        <table class="tabla_maquinas">
+            <thead>
+                <th>Editar</th>
+                <th>Nombre de la maquina</th>
+                <th>Costo</th>
+                <th>Vida util</th>
+                <th>Unidad</th>
+                <th>Eliminar</th>
+            </thead>
+            <tbody>
+                {% for maquina in maquinaria %}
+                <tr>
+                    <td>
+                        <a href="#abrir_modal_editar_{{maquina.id_maquina}}" class="btn_editar"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    </td>
+                    <td>{{maquina.nombre_maquina}}</td>
+                    <td>${{maquina.costo_maquina}}</td>
+                    <td>{{maquina.vida_util}}</td>
+                    <td>{{maquina.nombre_unidad}} </td>
+                    <td>
+                        <a class="btn_eliminar" href="#modal_eliminar_maquina_{{maquina.id_maquina}}"><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                 
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+
+        {% for maquina in maquinaria %}
+        <div class="modal_eliminar_maquina" id="modal_eliminar_maquina_{{maquina.id_maquina}}">
+            <h3 style="margin-bottom: 20px; font-size: 25px;">Eliminar maquina</h3>
+            <p>¿Estas seguro de eliminar esta maquina?</p>
+            <p>{{maquina.nombre_maquina}} </p>
+            <div class="btns_eliminar_maquina">
+                <a href="{{url_for('eliminar_maquinaria', id_maquina = maquina.id_maquina)}}" class="boton_eliminar">Aceptar</a>
+                <a href="#" class="boton_cancelar">Cancelar</a>
+            </div>
+        </div>
+    {% endfor %}   
+
+    {% for maquina in maquinaria %}
+    <div class="modal_editar2" id="abrir_modal_editar_{{maquina.id_maquina}}">
+        <form method="post" action="{{url_for('editar_maquina_proceso', id_maquina= maquina.id_maquina)}}">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+            <h3>Editar maquina</h3>
+            <p>Nombre de la maquina</p>
+            <input type="text" name="nombre_maquina" value="{{maquina.nombre_maquina}}">
+            <p>Costo de la maquina</p>
+            <input type="number" name="costo_maquina" value="{{maquina.costo_maquina}}">
+            <p>Vida útil</p>
+            <input type="number" name="vida_util" value="{{maquina.vida_util}}">
+            <p>Selecciona la unidad</p>
+            <select name="fk_unidad" id="">    
+                {% for unidad in unidades %}
+                    <option value="{{unidad[0]}}" {% if unidad.0 == maquina.fk_unidad %} selected {% endif %}  >{{unidad[1]}} </option>
+                {% endfor %}  
+            </select>
+            <div class="botones_editar">
+                <button type="submit" class="boton">Aceptar</button>
+                <a href="#" class="boton_cancelar">Regresar</a>
+            </div>
+        </form>
+    </div>
+
+    {% endfor %}
+    
+    <div class="paginador">
+
+        {% if total_pages == 1 and page== 1 %}
+        <a class="btn_inactivo">Aun sin páginas</a>
+         
+        {% endif %}
+
+        
+        {% if page == 1 and total_pages > 1 %}
+        <a  class="btn_inactivo">Regresar</a>
+        <a href="{{url_for ('maquinaria')}}?page={{ page + 1 }}&per_page= {{ per_page }}" class="btn_avanzar">Avanazar</a>
+        <a class="contador">{{page}}/{{total_pages}} </a>
+
+        {% endif %}
+        {% if page > 1 and page != total_pages %}
+        <a href="{{url_for ('maquinaria')}}?page={{ page - 1 }}&per_page= {{ per_page }}" class="btn_retroceder">Regresar</a>
+        <a href="{{url_for ('maquinaria')}}?page={{ page + 1 }}&per_page= {{ per_page }}" class="btn_avanzar">Avanazar</a>
+        <a class="contador">{{page}}/{{total_pages}} </a>
+        {% endif %}
+
+        {% if page == total_pages and total_pages != 1 %}
+        <a href="{{url_for ('maquinaria')}}?page={{ page - 1 }}&per_page= {{ per_page }}" class="btn_retroceder">Regresar</a>
+        <a  class="btn_inactivo">Avanazar</a>
+        <a class="contador">{{page}}/{{total_pages}} </a>
+        {% endif %}
+    </div>
+
+
+    <script> 
+        function mostrarNotificacion() {
+            const notificacion = document.getElementById("notificacion");
+            notificacion.style.display = "block";
+        
+            // Cerrar la notificación después de 4 segundos
+            setTimeout(function() {
+                notificacion.style.display = "none";
+            }, 2000);
+        }
+        
+        // Mostrar la notificación para probar
+        mostrarNotificacion();
+    </script>
+
+ {% endblock %}
+</body>
+

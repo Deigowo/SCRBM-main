@@ -1,0 +1,228 @@
+{% extends "dashboard.html" %}
+
+{% block titulo %} Unidades {% endblock %}
+
+
+
+{% block head %} {% endblock %}
+
+{% block contenido %}
+<body class="body_papelera">
+    <div class="contenido_papelera">
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="notifcacion {% if "Error" in message %} peligro {%  elif "Advertencia" in message %} advertencia {% else %} completado {% endif %} " id="notificacion">
+                        {{message}} 
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="texto_bienvenida_papelera">
+            <h1 style="font-size: 50px;">Papelera</h1>
+            <p>Bienvenido a tu papelera, aqui encontraras todos los datos que alguna vez eliminaste.
+            Aqui podras restaurarlos o eliminarlos definitivamente.
+            </p>
+        </div>
+
+        <details>
+
+            <summary>Unidades</summary>
+
+            {% if unidades %}
+
+            <table class="tabla_unidades_papelera">
+                <thead>
+                    <th>Unidad de medida</th>
+                    <th>Eliminar</th>
+                    <th>Restaurar</th>
+                </thead>
+                <tbody>
+                    {% for unidad in unidades %}
+                    <tr>
+                        <td>{{unidad[1]}}</td>
+                        <td>
+                            <a class="btn_eliminar" href="#id_modal_eliminar_unidad{{unidad[0]}}"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                        <td><a href="{{url_for('restaurar_unidad', id_unidad=unidad.0)}}" class="boton_restaurar"><i class="fa-solid fa-trash-can-arrow-up"></i></a></td>
+                                       
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>Sin unidades eliminadas</p>
+            {% endif %}
+  
+
+        </details>
+
+        {% for unidad in unidades %}
+        <div class="modal_eliminar_unidad_de_papelera" id="id_modal_eliminar_unidad{{unidad[0]}}">
+            <h3 style="margin-bottom: 20px; font-size: 25px;">Eliminar unidad</h3>
+            <p>¿Esta seguro de eliminar esta unidad para siempre? No se podra restaurar</p>
+            <p>{{unidad.1}} </p>
+            <div class="opciones_eliminar_unidad">
+                <a href="{{url_for('papelera_eliminar_unidad', id_unidad=unidad.0)}}" class="btn_aceptar_eliminar_unidad boton_eliminar">Aceptar</a> 
+                <a href="#"  class="boton_cancelar">Cancelar</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <details>
+            <summary>Materiales</summary>
+
+            {% if materiales %}
+            <table class="tabla_materiales_papelera">
+                <thead>
+                    <th>Nombre del material</th>
+                    <th>Costo</th>
+                    <th>Unidad</th>
+                    <th>Eliminar</th>
+                    <th>Restaurar</th>
+                </thead>
+                <tbody>
+                    {% for material in materiales %}
+                    <tr>
+                        <td>{{material.1}}</td>
+                        <td>${{material.2}}</td>
+                        <td>{{material.3}}</td>
+                        <td>
+                            <a class="btn_eliminar" href="#modal_eliminar_material_{{material[0]}}"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                        <td><a href="{{url_for('restaurar_material', id_material=material.0)}}" class="boton_restaurar"><i class="fa-solid fa-trash-can-arrow-up"></i></a></td>
+                     
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>Sin materiales eliminados</p>
+            {% endif %}
+
+        </details>
+
+        {% for material in materiales %}
+        <div class="modal_eliminar_unidad_de_papelera" id="modal_eliminar_material_{{material[0]}}">
+            <h3 style="margin-bottom: 20px; font-size: 25px;">Eliminar material</h3>
+            <p>¿Esta seguro de eliminar este material para siempre? No se podra restaurar</p>
+            <p>{{material.1}} </p>
+            <div class="opciones_eliminar_unidad">
+                <a href="{{url_for('eliminar_material_papelera', id_material=material.0)}}" class="btn_aceptar_eliminar_unidad boton_eliminar">Aceptar</a> 
+                <a href="#"  class="boton_cancelar">Cancelar</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <details>
+            <summary>Oficios</summary>
+            {% if oficios %}
+            <table class="tabla_oficios_papelera">
+                <thead>
+                    <th>Nombre del oficio</th>
+                    <th>Unidad</th>
+                    <th>Costo</th>
+                    <th>Eliminar</th>
+                    <th>Restaurar</th>
+                </thead>
+                <tbody>
+                    {% for oficio in oficios %}
+                    <tr>
+                        <td>{{oficio.1}}</td>
+                        <td>{{oficio.2}}</td>
+                        <td>${{oficio.3}}</td>
+                        <td>
+                            <a class="btn_eliminar" href="#modal_eliminar_{{oficio.0}}"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                        <td><a href="{{url_for('restaurar_oficio' , id_oficio=oficio.0)}}" class="boton_restaurar"><i class="fa-solid fa-trash-can-arrow-up"></i></a></td>
+        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Sin oficios eliminados</p>
+            {% endif %}
+            {% for oficio in oficios %}
+            <div class="modal_eliminar" id="modal_eliminar_{{oficio.0}}">
+                <h3 style="margin-bottom: 20px; font-size: 25px;">Eliminar oficio</h3>
+                <p>¿Esta seguro de eliminar este oficio para siempre? No se podra restaurar</p>
+                <p>{{oficio.1}} </p>
+                <div class="opciones_eliminar_unidad">
+                <a href="{{url_for('eliminar_oficio_papelera', id_oficio = oficio.0)}}" class="btn_aceptar_eliminar_unidad boton_eliminar">Aceptar</a> 
+                <a href="#"  class="boton_cancelar">Cancelar</a>
+                </div>
+            </div>
+            {% endfor %}
+
+        </details>
+
+        <details>
+            <summary>Maquinaria</summary>
+            {% if maquinaria %}
+            <table class="tabla_maquinas_papelera">
+                <thead>
+                    <th>Nombre de la maquina</th>
+                    <th>Costo</th>
+                    <th>Vida util</th>
+                    <th>Unidad</th>
+                    <th>Eliminar</th>
+                    <th>Restaurar</th>
+                </thead>
+                <tbody>
+                    {% for maquina in maquinaria %}
+                    <tr>
+                        <td>{{maquina.1}}</td>
+                        <td>${{maquina.2}}</td>
+                        <td>{{maquina.3}}</td>
+                        <td>{{maquina.4}} </td>
+                        <td>
+                            <a class="btn_eliminar" href="#modal_eliminar_{{maquina[0]}}"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                        <td><a href="{{url_for('restaurar_maquina',id_maquina=maquina.0)}}" class="boton_restaurar"><i class="fa-solid fa-trash-can-arrow-up"></i></a></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>Sin maquinas eliminadas</p>
+            {% endif %}
+
+            {% for maquina in maquinaria %}
+
+            <div class="modal_eliminar" id="modal_eliminar_{{maquina.0}}">
+                <h3 style="margin-bottom: 20px; font-size: 25px;">Eliminar maquina</h3>
+                <p>¿Esta seguro de eliminar esta maquina para siempre? No se podra restaurar</p>
+                <p>{{maquina.1}} </p>
+                <div class="opciones_eliminar_unidad">
+                <a href="{{url_for('eliminar_maquina_papelera', id_maquina=maquina.0)}}" class="btn_aceptar_eliminar_unidad boton_eliminar">Aceptar</a> 
+                <a href="#"  class="boton_cancelar">Cancelar</a>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </details>
+        
+    </div>
+
+    <script> 
+        function mostrarNotificacion() {
+            const notificacion = document.getElementById("notificacion");
+            notificacion.style.display = "block";
+        
+            // Cerrar la notificación después de 4 segundos
+            setTimeout(function() {
+                notificacion.style.display = "none";
+            }, 2000);
+        }
+        
+        // Mostrar la notificación para probar
+        mostrarNotificacion();
+    </script>
+    
+</body>
+
+{% endblock %}
